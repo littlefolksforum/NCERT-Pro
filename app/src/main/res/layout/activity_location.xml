@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.urexamhelp.ncertpro.LocationActivity"
+    android:background="@drawable/gradient">
+
+    <android.support.v7.widget.Toolbar
+        android:theme="@style/ToolBarStyle"
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center_vertical"
+        android:minHeight="50dp"
+        android:contentInsetLeft="0dp"
+        android:contentInsetStart="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
+        android:contentInsetRight="0dp"
+        android:contentInsetEnd="0dp"
+        app:contentInsetRight="0dp"
+        app:contentInsetEnd="0dp">
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="0dp"
+            android:layout_marginVertical="16dp"
+            android:textSize="25sp"
+            android:textColor="@color/colorWhite"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
+            android:gravity="center" />
+
+    </android.support.v7.widget.Toolbar>
+
+    <RelativeLayout
+        android:id="@+id/mainScrollView"
+        android:layout_width="match_parent"
+        android:layout_below="@id/toolbar"
+        android:layout_height="match_parent"
+        android:background="@color/colorWhite"
+        android:padding="16dp">
+
+
+        <RelativeLayout
+            android:id="@+id/locationRL"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent">
+
+            <TextView
+                android:id="@+id/locationTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="10dp"
+                android:text="Where are you from?"
+                android:textColor="#66000000"
+                android:textSize="15sp"/>
+
+            <EditText
+                android:id="@+id/locationET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/locationTV"
+                android:ems="10"
+                android:hint="Start Typing a Location..."
+                android:inputType="textPersonName"
+                android:shadowColor="#1e000000"
+                android:textColor="#000000" />
+
+            <ListView
+                android:id="@+id/locationLV"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/locationET">
+            </ListView>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+    <Button
+        android:id="@+id/submitButton"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_height="50dp"
+        android:background="#dcdcdc"
+        android:textColor="#000000" />
+
+</RelativeLayout>

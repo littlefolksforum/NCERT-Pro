@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <link type="text/css" rel="stylesheet" href="css/concepts.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    </head>
+    <body>
+        <div id="concepts-wrapper"></div>
+        <script type="text/template" class="swig-tpl" data-tpl="concept">
+            <div class="concept {{type}}">
+                <div class="type-indicator"></div>
+                <div class="content">
+                    <div class="header">
+                        <div class="num">{{counter}}</div>
+                        <div class="type-text">{{type}}</div>
+                        <a class="bookmark js-bookmark {% if is_bookmarked %}active{%endif%}" id="bookmark_{{id}}" data-id="{{id}}" data-is-bookmarked="{{is_bookmarked}}" data-in-progress="0"></a>
+                    </div>
+
+                    <div class="heading">{{heading}}</div>
+                    {% if gif_video %}
+                        <div class="gifVideoContainer js-gif-thumbnail" data-url="{{gif_video}}">
+                            <img src="{{gif_thumbnail}}" class="gifVideoThumbnail ">
+                            <div class="gifBox">GIF</div>
+                        </div>
+                    {% endif %}
+
+                    {% if image %}
+                        <div class="img"><img src="{{image}}" class="js-image" /></div>
+                    {% endif %}
+                    <div class="text">{{text|clean_html|safe}}</div>
+                </div>
+            </div>
+        </script>
+
+        <script type="text/javascript" src="js/zepto.min.js"></script>
+        <script type="text/javascript" src="js/swig-1.4.2.min.js"></script>
+        <script type="text/javascript" src="js/swig-filters.js"></script>
+        <script type="text/javascript" src="MathJax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+        <script type="text/javascript" src="js/concepts.js"></script>
+    </body>
+</html>

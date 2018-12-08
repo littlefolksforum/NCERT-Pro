@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "38568283601",
+    "firebase_url": "https://ncert-pro-367bd.firebaseio.com",
+    "project_id": "ncert-pro-367bd",
+    "storage_bucket": "ncert-pro-367bd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:38568283601:android:0f4aea94dd8e64fa",
+        "android_client_info": {
+          "package_name": "com.urexamhelp.ncertpro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "38568283601-3cetrje6qrp6d44jv2q6v2roo1tellat.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.urexamhelp.ncertpro",
+            "certificate_hash": "1b80dcf3e19b2fd93aee91057c3eb0f29c9c8a14"
+          }
+        },
+        {
+          "client_id": "38568283601-6clkckgg68mpi8dnkvt0p71tmip50qmn.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "38568283601-6clkckgg68mpi8dnkvt0p71tmip50qmn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8-2qS7q48Q8OJhepiYYJEK2wzVpCys6c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "38568283601-6clkckgg68mpi8dnkvt0p71tmip50qmn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

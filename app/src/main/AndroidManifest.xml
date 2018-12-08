@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.urexamhelp.ncertpro">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/icon"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name="com.urexamhelp.ncertpro.LaunchActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.urexamhelp.ncertpro.OTPActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.urexamhelp.ncertpro.OTPConfirmActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.urexamhelp.ncertpro.ChooseGradeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.urexamhelp.ncertpro.ChapterActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.urexamhelp.ncertpro.SubjectActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.urexamhelp.ncertpro.LocationActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.urexamhelp.ncertpro.MainActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.urexamhelp.ncertpro.FeedbackActivity"
+            android:screenOrientation="portrait"></activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="7ef99739459ae29819bd74dfee3350468c6eace6"
+            />
+    </application>
+
+</manifest>

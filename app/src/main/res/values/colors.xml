@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#0a8ac5</color>
+    <color name="colorPrimaryDark">#22a6c5</color>
+    <color name="colorAccent">#0055a9</color>
+    <color name="colorWhite">#ffffff</color>
+
+
+
+
+
+    <color name="physicsColor">#F0C05B</color>
+    <color name="physicsStatusBarColor">#D7AC51</color>
+    <color name="physicsLightBackgColor">#FFFBF5</color>
+
+    <color name="mathsColor">#6197DD</color>
+    <color name="mathsLightBackgColor">#ECF0F2</color>
+
+    <color name="chemistryColor">#EC7C7C</color>
+    <color name="chemistryLightBackgColor">#F2EBEC</color>
+
+    <color name="aptitudeColor">#C74CA7</color>
+    <color name="aptitudeLightBackgColor">#F8F0F4</color>
+
+    <color name="biologyColor">#93C57C</color>
+    <color name="biologyLightBackgColor">#ECF0ED</color>
+
+    <color name="historyColor">#F7AC51</color>
+    <color name="historyLightBackgColor">#FEF6ED</color>
+
+    <color name="englishColor">#EB77A1</color>
+    <color name="englishLightBackgColor">#E6E6E6</color>
+
+    <color name="economicsColor">#ACAF4C</color>
+    <color name="economicsLightBackgColor">#FFFAF7</color>
+
+    <color name="accountsColor">#3586D4</color>
+    <color name="accountsLightBackgColor">#FFFBF5</color>
+
+    <color name="bussinessStudiesColor">#CCA58F</color>
+    <color name="bussinessStudiesLightBackgColor">#FFFBF5</color>
+
+    <color name="civicsColor">#5EC5C8</color>
+    <color name="civicsLightBackgColor">#F6F3FC</color>
+
+    <color name="geographyColor">#F58A64</color>
+    <color name="geographyLightBackgColor">#EAF8F6</color>
+
+    <color name="logicalLightBackgColor">#FCF7F9</color>
+
+    <color name="evsLightBackgColor">#F9FDF7</color>
+
+    <color name="scienceLightBackgColor">#FFFBF7</color>
+
+</resources>
+

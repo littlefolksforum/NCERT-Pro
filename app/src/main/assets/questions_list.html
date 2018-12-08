@@ -1,0 +1,330 @@
+<html>
+<head>
+    <style>
+            *,*:before,*:after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
+            body{ font-size: 16px; line-height: 24px; font-family: 'Roboto', sans-serif; padding: 0; margin:0; color: #4A4A4A; background-color: #F2F4F6; }
+            .fl { float:left;}
+            .fr { float: right;}
+            .clr {clear:both;}
+
+            #question-list-wrapper { padding: 0 8px; }
+            .section {
+                padding: 0 8px 8px; margin-top: 36px;
+                color: #ADB4BA; text-transform: uppercase;
+                font-size: 11px; line-height: 13px;
+                letter-spacing: 1.1px; font-weight: bold;
+                border-bottom: 1px solid #E6E9EB;
+            }
+            .question {
+                margin-top: 8px; background-color: #fff; border-radius: 5px; -webkit-border-radius: 5px;
+                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); -moz-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            }
+            .question.attempted { background-color: #F6FDFF; border: 1px solid rgba(65, 189, 246, 0.3); border-top: none; }
+
+            .question .ribbon {
+                height: 3px;
+                background-color: #41BDF6;
+                border-top-right-radius: 5px;
+                border-top-left-radius: 5px; }
+
+            .question .header {
+                padding: 16px; padding-bottom: 12px;
+                font-size: 11px; line-height: 11px;
+                font-weight: bold; color: #002B4B;
+            }
+            .question.attempted .header { color: #41BDF6; }
+            .question .header .count { font-weight: 500; margin-top: 3px; }
+            .question.attempted .header .count { padding-right: 8px; border-right: 1px solid #D8D8D8; margin-right: 8px; }
+            .question .header .attempt-action { display: inline-block; text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
+            .question .header .bookmark {
+                display: block; text-decoration: none; cursor: pointer; width: 16px; height: 16px; float: right;
+                background-image: url(./images/bookmark_light.png); background-size: auto 16px;
+                background-position: center; background-repeat: no-repeat;
+                -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+                -webkit-tap-highlight-color: transparent;
+            }
+            .question .content { padding: 0 16px; padding-bottom: 16px; }
+        </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+</head>
+<body>
+<div id="question-list-wrapper"></div>
+
+<script type="text/template" class="swig-tpl" data-tpl="question">
+    <div class="question js-question {% if attempt.action == 'answer' %}attempted{% endif %}" id="q-{{sequence_no}}">
+        {% if attempt.action == "answer" %}<div class="ribbon"></div>{% endif %}
+        <div class="header">
+            <div class="count fl">{% if sequence_no > 9 %}{{sequence_no}}{% else %}0{{sequence_no}}{% endif %}</div>
+            <div class="attempt-action">
+                {% if attempt.action == "answer" %}Attempted{% elif attempt.action == "answer-later" or attempt.action == "answer-review" %}Marked for review{% elif attempt.action == "skip" %}Skipped{% endif %}
+            </div>
+            <a class="bookmark js-bookmark fr" data-id="{{id}}" data-is-bookmarked="{{is_bookmarked}}" data-in-progress="0"></a>
+            <div class="clr"></div>
+        </div>
+
+        <div class="content js-content" data-qid={{id}}>
+            {% if passage %}
+            <h2>Passage</h2>
+            {{passage|clean_html|safe}}
+            {% endif %}
+
+            {% if passage_image %}
+            <img src="{{passage_image}}" class="js-image" class="js-image"/>
+            {% endif %}
+
+            {{question.question|clean_html|safe}}
+
+            {% if assertion %}
+            <h2>Assertion</h2>
+            {{assertion|clean_html|safe}}
+            {% endif %}
+
+            {% if reason %}
+            <h2>Reason</h2>
+            {{reason|clean_html|safe}}
+            {% endif %}
+        </div>
+    </div>
+</script>
+
+<script type="text/template" class="swig-tpl" data-tpl="section">
+    <div class="section">
+        {{section.name}}
+    </div>
+    {% for q in section.questions %}
+    <div class="question js-question {% if q.attempt.action == 'answer' %}attempted{% endif %}" id="q-{{q.sequence_no}}">
+        {% if q.attempt.action == "answer" %}<div class="ribbon"></div>{% endif %}
+        <div class="header">
+            <div class="count fl">{% if q.sequence_no > 9 %}{{q.sequence_no}}{% else %}0{{q.sequence_no}}{% endif %}</div>
+            <div class="attempt-action">
+                {% if q.attempt.action == "answer" %}Attempted{% elif q.attempt.action == "answer-later" or q.attempt.action == "answer-review" %}Marked for review{% elif q.attempt.action == "skip" %}Skipped{% endif %}
+            </div>
+            <a class="bookmark js-bookmark fr" data-qid="{{q.id}}" data-is-bookmarked="{{q.is_bookmarked}}" data-in-progress="0"></a>
+            <div class="clr"></div>
+        </div>
+
+        <div class="content js-content" data-qid={{q.id}}>
+            {% if q.passage %}
+            <h2>Passage</h2>
+            {{q.passage|clean_html|safe}}
+            {% endif %}
+
+            {% if q.passage_image %}
+            <img src="{{q.passage_image}}" class="js-image"/>
+            {% endif %}
+
+            {{q.question.question|clean_html|safe}}
+
+            {% if q.assertion %}
+            <h2>Assertion</h2>
+            {{q.assertion|clean_html|safe}}
+            {% endif %}
+
+            {% if q.reason %}
+            <h2>Reason</h2>
+            {{q.reason|clean_html|safe}}
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</script>
+
+<script type="text/javascript" src="js/zepto.min.js"></script>
+<script type="text/javascript" src="js/swig-1.4.2.min.js"></script>
+<script type="text/javascript" src="js/swig-filters.js"></script>
+<script type="text/javascript" src="MathJax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+<script type="text/javascript">
+    var $quesListContainer;
+    var CONTENT_SELECTOR = '.js-content';
+    var BOOKMARK_BTN_SELECTOR = '.js-bookmark';
+    var SWIG_TEMPLATES = {};
+
+    $(function() {
+        $quesListWrapper = $("#question-list-wrapper");
+        compileSwigTemplates();
+        configureMathjax();
+        initListerners();
+        // displayMockQuestions();
+    });
+
+    function configureMathjax() {
+        MathJax.Hub.Config({
+            showProcessingMessages: false,
+            showMathMenu: false,
+            messageStyle: "none",
+            tex2jax: {
+                inlineMath: [['$$','$$'], ['\\(','\\)']],
+                displayMath: [['$$$','$$$'], ['\\(','\\)']]
+            },
+            styles: {
+                ".MathJax_SVG svg > g, .MathJax_SVG_Display svg > g": {
+                    fill: "#4A4A4A",
+                    stroke: "#4A4A4A"
+                }
+            }
+        });
+
+        MathJax.Hub.Register.StartupHook('End', function(){
+            if ('jsObject' in window)
+                jsObject.mathjax_done();
+        });
+    }
+
+    function compileSwigTemplates() {
+        var $rawTemplates = $('.swig-tpl');
+
+        if (!$rawTemplates.length)
+            return;
+
+        $rawTemplates.each(function() {
+            var name = $(this).data('tpl');
+            var content = $(this).html();
+            SWIG_TEMPLATES[name] = swig.compile(content || '');
+        });
+    }
+
+    function renderTemplate(template, context) {
+        if (SWIG_TEMPLATES.hasOwnProperty(template)) {
+            return SWIG_TEMPLATES[template](context || {});
+        }
+        return '';
+    }
+
+    function initListerners() {
+        $(document).on('click', CONTENT_SELECTOR, function(e) {
+            var $questionContent = $(this).closest(CONTENT_SELECTOR);
+            var questionId = $questionContent.data('qid');
+
+            if (!$questionContent.hasClass('selected')) {
+                onSelectQuestion(questionId);
+            }
+        });
+
+        $(document).on('click', BOOKMARK_BTN_SELECTOR, function(e) {
+            var $bookmarkBtn = $(this).closest(BOOKMARK_BTN_SELECTOR);
+            var qid = $bookmarkBtn.data("qid") || 0;
+            var isBookmarked = $bookmarkBtn.data("is-bookmarked") || 0;
+            var inProgress = $bookmarkBtn.data("in-progress") || 0;
+
+            if (inProgress) {
+                return;
+            }
+
+            $bookmarkBtn.data("in-progress", 1);
+
+            if (isBookmarked) {
+                $bookmarkBtn.data("is-bookmarked", 0);
+                $bookmarkBtn.removeClass("active");
+                removeBookmark(qid || 0);
+            } else {
+                $bookmarkBtn.data("is-bookmarked", 1);
+                $bookmarkBtn.addClass("active");
+                addBookmark(qid || 0);
+            }
+        });
+    }
+
+    function displayQuestions(sectonsJSONEncoded) {
+        try {
+            var sectonsJSON = window.atob(sectonsJSONEncoded);
+            var sections = $.parseJSON(sectonsJSON);
+            var sectionHTML = '';
+
+            $.each(sections, function(idx, section) {
+                var questionsHTML = '';
+                $.each(section.questions, function(index, question) {
+                    questionsHTML += renderTemplate('question', question);
+                });
+
+                sectionHTML += renderTemplate('section', {'section': section, 'questionsHTML': questionsHTML});
+            });
+
+            $quesListWrapper.html(sectionHTML);
+            setTimeout(function(){
+                MathJax.Hub.Queue(['Typeset',MathJax.Hub]);
+            },0);
+        } catch(e) {
+            console.error('Failed to parse JSON');
+        }
+    }
+
+    function onSelectQuestion(questionID) {
+        console.log('onSelectQuestion', questionID);
+
+        if ('jsObject' in window)
+            jsObject.onSelectQuestion(questionID);
+    }
+
+    function addBookmark(id) {
+        console.log("addBookmark", id);
+        if ("jsObject" in window)
+            jsObject.addBookmark(id);
+    }
+
+    function removeBookmark(id) {
+        console.log("removeBookmark", id);
+        if ("jsObject" in window)
+            jsObject.removeBookmark(id);
+    }
+
+    function displayMockQuestions() {
+        var sections = [
+            {
+                "description": "",
+                "sequence_no": 1,
+                "id": 381213,
+                "questions": [
+                    {
+                        "question": {
+                            "sequence_no": 1,
+                            "question": "&nbsp;A bullet of mass $$0.01 kg$$ moving at a speed of $$500 m/sec$$, strikes a block of mass $$2 kg$$, suspended by a rope of length $$5 m$$. If the block rises to a height of $$0.1 m$$, then with what velocity does the bullet emerge from the block? <br>",
+                            "id": 6018,
+                        },
+                        "attempt": {},
+                        "test_id": 54630,
+                        "sequence_no": 1,
+                        "id": 5540049
+                    },
+                    {
+                        "question": {
+                            "sequence_no": 2,
+                            "question": "Two thin lenses, when in contact, produce a combination of power $$+10\\ D$$. When they are $$0.25\\ m$$ apart, the power reduces to $$+6\\ D$$. The focal length of the lenses are:",
+                            "id": 6041,
+                        },
+                        "attempt": {'action': 'answer'},
+                        "test_id": 54630,
+                        "sequence_no": 2,
+                        "id": 5540050
+                    },
+                    {
+                        "question": {
+                            "sequence_no": 3,
+                            "question": "A satellite moving on a circular path of radius $$r$$ around Earth has a time period $$T$$. If its&nbsp;radius slightly increases by $$\\Delta r$$, the change&nbsp;in its time period is<br>",
+                            "id": 6083,
+                        },
+                        "attempt": {},
+                        "test_id": 54630,
+                        "sequence_no": 3,
+                        "id": 5540051
+                    },
+                    {
+                        "question": {
+                            "sequence_no": 4,
+                            "question": "A smooth block is released from rest on a&#160;$$45^{0}$$ incline and it starts sliding at a distance $$d$$. The time taken to slide is $$n$$ times as much to slide on rough incline then on a smooth incline. The coefficient of friction is",
+                            "id": 7843,
+                        },
+                        "attempt": {'action': 'answer'},
+                        "test_id": 54630,
+                        "sequence_no": 4,
+                        "id": 5540052
+                    }
+                ],
+                "name": "Physics - Single correct type"
+            },
+        ];
+
+        displayQuestions(window.btoa(JSON.stringify(sections)));
+    }
+</script>
+</body>
+</html>

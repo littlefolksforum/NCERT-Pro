@@ -1,0 +1,101 @@
+@font-face {
+    font-family: 'ProximaNova';
+    src: url('../fonts/OpenSans-Bold.otf') format('opentype');
+    font-style: normal;
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: 'MinionPro';
+    src: url('../fonts/Minion-Pro.ttf') format('truetype');
+    font-style: normal;
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: 'MinionPro';
+    src: url('../fonts/Minion-Pro-Bold.ttf') format('truetype');
+    font-style: normal;
+    font-weight: bold;
+}
+
+body{ font-size: 14px; line-height:1.4; font-family: 'Roboto', sans-serif; padding: 0; margin:0; color: #4A4A4A; background-color: #1E9A85; }
+table{ border-collapse:collapse; font-size:14px; }
+.fl{ float:left;}
+.fr{ float: right;}
+.clr {clear:both;}
+
+#concepts-wrapper { padding: 16px 8px; }
+
+.concept {
+    margin-bottom: 16px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.concept:last-child {  margin-bottom: 0; }
+
+.concept .content { padding: 16px; }
+.concept .type-indicator { padding: 4px; border-top-left-radius: 10px; border-top-right-radius: 10px; }
+.concept .header { font-size: 16px; line-height: 24px; font-weight: bold; font-family: "OpenSans";
+    font-weight: bold; letter-spacing: 0.5px; }
+.concept .num { padding-right: 10px; margin-right: 10px; border-right: 1px solid #ededed; display: inline-block; }
+.concept .type-text { text-transform: uppercase; display: inline-block; }
+.concept .bookmark {
+    display: block; text-decoration: none; cursor: pointer; width: 21px; height: 21px; float: right;
+    background-image: url(../images/bookmark.svg); background-size: auto 16px;
+    background-position: center; background-repeat: no-repeat;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    -webkit-tap-highlight-color: transparent;
+}
+.concept .bookmark.active { background-image: url(../images/bookmark_active.svg); }
+
+.concept .heading { margin-top: 18px; margin-bottom: 10px; font-size: 16px; line-height: 24px;
+    font-weight: bold; font-family: "MinionPro"; font-weight: bold; overflow-x: auto; }
+.concept .img { margin-bottom: 18px; text-align: center; }
+.concept .img img { max-width: 100%; }
+.concept .text { font-size: 16px; line-height: 24px; font-family: "MinionPro"; overflow-x: auto; }
+.concept table td { padding: 5px;  }
+
+.concept .gifVideoContainer { margin-bottom: 18px; text-align: center; position: relative; }
+.concept .gifVideoContainer .gifVideoThumbnail { max-width: 100%; }
+.concept .gifVideoContainer .gifBox {
+    background-color: rgba(0,0,0,.5);
+    border: 2px dashed #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(0,0,0,.5);
+    color: #fff;
+    font-size: 16px;
+    left: 50%;
+    opacity: 1;
+    padding: 2rem;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%,-50%) scale(1) rotate(0deg);
+}
+
+.concept.definition .type-indicator { background-color: #b88bbe;  }
+.concept.definition .header .type-text { color: #b88bbe;  }
+
+.concept.formula .type-indicator { background-color: #71cac4;  }
+.concept.formula .header .type-text { color: #71cac4;  }
+
+.concept.shortcut .type-indicator { background-color: #f27286;  }
+.concept.shortcut .header .type-text { color: #f27286;  }
+
+.concept.result .type-indicator { background-color: #92c4ea;  }
+.concept.result .header .type-text { color: #92c4ea;  }
+
+.concept.diagram .type-indicator { background-color: #c8c8c8;  }
+.concept.diagram .header .type-text { color: #c8c8c8;  }
+
+.concept.law .type-indicator { background-color: #2490ce;  }
+.concept.law .header .type-text { color: #2490ce;  }
+
+.concept.example .type-indicator { background-color: #2490ce;  }
+.concept.example .header .type-text { color: #2490ce;  }
+
+

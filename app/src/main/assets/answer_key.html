@@ -1,0 +1,1236 @@
+<html>
+<head>
+    <link type="text/css" rel="stylesheet" href="css/continuous_assessment.css"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+</head>
+<body class="questionBank">
+<div id="content-wrapper"></div>
+
+<script type="text/template" class="swig-tpl" data-tpl="question">
+    <div class="question-wrapper">
+        {% if not isDoubtQuestion %}
+        <div class="header">
+            <div class="count fl">{% if sequence_no > 9 %}{{sequence_no}}{% else
+                %}0{{sequence_no}}{% endif %}
+            </div>
+            {% if testType == 'questionBank' %}
+            <div class="questionId">#{{id}}{{question_id}}</div>
+            {% endif %}
+
+            <!--<a class="askDoubt js-ask-doubt js-ask-doubt-{{id}}{{question_id}}"-->
+               <!--data-id="{{id}}{{question_id}}" style="display: block;"></a>-->
+            <div class="clr"></div>
+        </div>
+        {% endif %}
+
+        {% if question_linked_to_id and isDoubtQuestion %}
+            <div class="passageConatiner js-passage-container" style="margin-bottom: 20px;">
+                {% if passage_header %}
+                    <div class="passage-header">{{passage_header|clean_html|safe}}</div>
+                {% endif %}
+                
+                {% if passage %}
+                    <div class="passage js-passage">
+                        <div class="passage-text js-passage-text">
+                            {{passage|clean_html|safe}}
+                            <div class="line-number-wrapper"></div>
+                        </div>
+                        <div class="toggleHeightBtn js-toggle-passage-height-btn">Read more</div>
+                    </div>
+                {% endif %}
+
+                {% if passage_footer %}
+                    <p class="passage-footer">{{passage_footer|clean_html|safe}}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div class="question js-question {{testType}}" id="q-{{id}}{{question_id}}"
+             data-qid="{{id}}{{question_id}}" {% if section_question_id %}
+             data-section-qid="{{section_question_id}}" {% endif %} data-style="{{question_style}}">
+            <div class="content">
+                {% if passage and not isPassageQuestion %}
+                    <h2>Passage</h2>
+                    {{passage|clean_html|safe}}
+                {% endif %}
+
+                {% if passage_image %}
+                    <img src="{{passage_image}}" class="js-image"/>
+                {% endif %}
+
+                {{question|clean_html|safe}}
+
+                {% if assertion %}
+                    <h2>Assertion</h2>
+                    {{assertion|clean_html|safe}}
+                {% endif %}
+
+                {% if reason %}
+                    <h2>Reason</h2>
+                    {{reason|clean_html|safe}}
+                {% endif %}
+
+                {% if image or question_image %}
+                    <img src="{{image}}{{question_image}}" class="js-image"/>
+                {% endif %}
+
+                {% if question_style == "matrix" %}
+                    <h2>List I</h2>
+                    <div>
+                        <table class="mx-list-table">
+                            {% for item in mx_l1 %}
+                                <tr>
+                                    <td class="label">{{loop.index|int_to_char('upper')}}</td>
+                                    <td>
+                                        {{item|clean_html|safe}}
+                                        {% if mx_l1_images[loop.index0] %}
+                                        <img src="{{mx_l1_images[loop.index0]}}" class="js-image"/>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+
+                    <h2>List II</h2>
+                    <div>
+                        <table class="mx-list-table">
+                            {% for item in mx_l2 %}
+                                <tr>
+                                    <td class="label">{{loop.index}}</td>
+                                    <td>
+                                        {{item|clean_html|safe}}
+                                        {% if mx_l2_images[loop.index0] %}
+                                        <img src="{{mx_l2_images[loop.index0]}}" class="js-image"/>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if question_style == "matrix" %}
+                <div class="matrix-options-wrapper">
+                    <table>
+                        {% set mxl2_length = mx_l2.length %}
+                        {% for mx_l1_item in mx_l1 %}
+                        {% set parent_loop = loop %}
+                        <tr class="js-options-row">
+                            <td>
+                                <span class="option-label js-option-label">{{loop.index|int_to_char('upper')}}</span>
+                            </td>
+                            <td class="matrix-choices">
+                                {% for mx_l2_item in mx_l2 %}
+                                {% set choice_value1 = parent_loop.index0 * mxl2_length + loop.index0 %}
+                                {% set choice_value = choice_value1+'' %}
+                                <label class="js-matrix-choice {% if user_mx_answer and user_mx_answer.indexOf(choice_value) > -1 %}selected{% endif %} {% if right_choice and right_choice.indexOf(choice_value) > -1 %}correct{% elif user_mx_answer and user_mx_answer.indexOf(choice_value) > -1 %}wrong{% endif %}">
+                                    {{ loop.index }}
+                                    <div class="choice-result">
+                                        <div class="icon"></div>
+                                    </div>
+                                </label>
+                                {% endfor %}
+                                <div class="clr"></div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% endif %}
+
+            {% if question_style == "blank" %}
+            <div class="blank-input-wrapper">
+                <input type="text" name="choices" value="{{user_bl_answer}}" class="js-blank-input"
+                       disabled/>
+                <div class="choice-result js-choice-result">
+                    {% if is_attempted %}Your answer{% endif %}
+                </div>
+                <div class="choice-result js-choice-result">
+                    {% if not correctly_answered or not is_attempted %}
+                    The correct answer is
+                    <div class="color-green js-correct-ans">{{right_choice|safe}}</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if question_style == "single correct" or question_style == "multiple correct" %}
+            <div class="options-container {{testType}}">
+                {% for choice in choices %}
+                <div class="js-option-list-item option {% if choice.is_right %}correct{% elif choice.is_marked %}wrong{% endif %}">
+                    <div class="label">{{choice.label}}</div>
+                    <div class="opt-content">
+                        {{choice.choice|clean_html|safe}}
+                        {% if choice.image %}
+                        <img src="{{choice.image}}" class="js-image"/>
+                        {% endif %}
+                    </div>
+                    <div class="choice-result js-choice-result">
+                        <div class="text">
+                            {% if choice.is_marked %}
+                            Your answer
+                            {% elif choice.is_right %}
+                            Correct answer
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="clr"></div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if question_style == "true-false" %}
+            <div class="options-container {{testType}}">
+                <div class="js-option-list-item option {% if right_choice == '1' %}correct{% elif marked_choice == '1' %}wrong{% endif %}"
+                     data-choice-id="1">
+                    <div class="label">A</div>
+                    <div class="opt-content">
+                        True
+                    </div>
+                    <div class="choice-result js-choice-result">
+                        <div class="text">
+                            {% if marked_choice == '1' %}
+                            Your answer
+                            {% elif right_choice == '1' %}
+                            Correct answer
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="clr"></div>
+                </div>
+                <div class="js-option-list-item option {% if right_choice == '0' %}correct{% elif marked_choice == '0' %}wrong{% endif %}"
+                     data-choice-id="0">
+                    <div class="label">B</div>
+                    <div class="opt-content">
+                        False
+                    </div>
+                    <div class="choice-result js-choice-result">
+                        <div class="text">
+                            {% if marked_choice == '0' %}
+                            Your answer
+                            {% elif right_choice == '0' %}
+                            Correct answer
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="clr"></div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if solution_available %}
+            <div class="solution js-solution" style="display: block;">
+                <div class="heading">Solution</div>
+
+                {% if solution_image %}
+                <img src="{{solution_image}}" alt="" class="js-image">
+                {% endif %}
+
+                <div class="solutionText">{{solution|clean_html|safe}}</div>
+
+                {% if question_info %}
+                <div class="stats">
+                    <div class="statsInfo attempts">
+                        <span class="number">{{question_info.stats.unique_user_attempts}}</span>
+                        User Attempts
+                    </div>
+                    <div class="dot"></div>
+                    <div class="statsInfo corrects">
+                        <span class="number">{{question_info.stats.correct_attempts}}%</span>
+                        Got it right
+                    </div>
+                    <div class="buttonsContainer">
+                        {% if question_info.concepts.length %}
+                        <div class="btn js-concept-btn concepts" data-qid="{{id}}{{question_id}}">
+                            Revise Concept
+                        </div>
+                        {% endif %}
+
+                        {% if question_info.playlist and question_info.playlist.videos.length %}
+                        <div class="btn js-lecture-btn lectures" data-qid="{{id}}{{question_id}}">
+                            Watch Lecture
+                        </div>
+                        {% endif %}
+
+                        <div class="clr"></div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</script>
+
+<!-- TPL: zero_case -->
+<script type="text/template" class="swig-tpl" data-tpl="zero_case">
+    <div class="zero-case">
+        No questions found.
+    </div>
+</script>
+
+<script type="text/javascript" src="js/zepto.min.js"></script>
+<script type="text/javascript" src="js/swig-1.4.2.min.js"></script>
+<script type="text/javascript" src="js/swig-filters.js"></script>
+<script type="text/javascript" src="MathJax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+<script type="text/javascript">
+            var $contentWrapper;
+            var SWIG_TEMPLATES = {};
+            var QUESTION_SELECTOR = '.js-question';
+
+            $(function(){
+                $contentWrapper = $("#content-wrapper");
+                compileSwigTemplates();
+                configureMathjax();
+                // displayMockQuestions();
+                // displayMockPassageDoubtQuestion();
+                initListerners();
+            });
+
+            function configureMathjax() {
+                MathJax.Hub.Config({
+                    showProcessingMessages: false,
+                    showMathMenu: false,
+                    messageStyle: "none",
+                    tex2jax: {
+                        inlineMath: [['$$','$$'], ['\\(','\\)']],
+                        displayMath: [['$$$','$$$'], ['\\(','\\)']]
+                    },
+                    styles: {
+                        ".MathJax_SVG svg > g, .MathJax_SVG_Display svg > g": {
+                            fill: "#4A4A4A",
+                            stroke: "#4A4A4A"
+                        }
+                    }
+                });
+
+                MathJax.Hub.Register.StartupHook('End', function(){
+                    if ('jsObject' in window)
+                        jsObject.mathjax_done();
+                });
+            }
+
+            function compileSwigTemplates() {
+                var $rawTemplates = $('.swig-tpl');
+
+                if (!$rawTemplates.length)
+                    return;
+
+                $rawTemplates.each(function() {
+                    var name = $(this).data('tpl');
+                    var content = $(this).html();
+                    SWIG_TEMPLATES[name] = swig.compile(content || '');
+                });
+            }
+
+            function renderTemplate(template, context) {
+                if (SWIG_TEMPLATES.hasOwnProperty(template)) {
+                    return SWIG_TEMPLATES[template](context || {});
+                }
+                return '';
+            }
+
+            function initListerners() {
+                $(document).on('click', '.js-concept-btn', function(e) {
+                    var $question = $(e.target).closest(QUESTION_SELECTOR);
+                    var questionId = $question.data("qid") || 0;
+
+                    //console.log('showConcepts', questionId);
+
+                    if ("jsObject" in window) {
+                        jsObject.showConcepts(questionId);
+                    }
+                });
+
+                $(document).on('click', '.js-lecture-btn', function(e) {
+                    var $question = $(e.target).closest(QUESTION_SELECTOR);
+                    var questionId = $question.data("qid") || 0;
+
+                    //console.log('showLectures', questionId);
+
+                    if ("jsObject" in window) {
+                        jsObject.showLectures(questionId);
+                    }
+                });
+
+                $(document).on('click', '.js-ask-doubt', function(e) {
+                    var $askDoubtBtn = $(e.target).closest('.js-ask-doubt');
+                    var questionId = $askDoubtBtn.data("id") || 0;
+
+                    if ("jsObject" in window) {
+                        jsObject.askDoubt(questionId);
+                    }
+                });
+
+                $(document).on('click', '.js-toggle-passage-height-btn', function(e) {
+                    var $passageText = $(this).closest('.js-passage').find('.js-passage-text');
+
+                    if ($passageText.hasClass('collapsed')) {
+                        $passageText.removeClass('collapsed');
+                        $(this).text('Read less');
+                    } else {
+                        $passageText.addClass('collapsed');
+                        $(this).text('Read more');
+                    }
+                });
+            }
+
+            function initPassage() {
+                // console.log("begin initPassage");
+
+                var $passageText = $contentWrapper.find('.js-passage-text');
+                var $passageTextLineNumWrapper = $passageText.find(".line-number-wrapper");
+                var passageMarkerLines = {};
+                var passageHeight = $passageText.height();
+                var lineHeight = parseInt($passageText.css('line-height'), 10);
+                var totalLines = passageHeight / lineHeight;
+
+                for (var lineNumber = 1; lineNumber <= totalLines; lineNumber++) {
+                    if (lineNumber == 1 || lineNumber % 5 == 0) {
+                        $passageTextLineNumWrapper.append($("<span>", { class: "line-number" }).text(lineNumber).css("top", (lineNumber-1)*lineHeight));
+                    }
+                }
+
+                var passageTopOffset = $passageText.offset().top;
+                var $passageMarkers = $passageText.find('.x-marker');
+                $passageMarkers.each(function(){
+                    var $marker = $(this);
+                    var markerID = $marker.text();
+                    $marker.data("marker", markerID);
+                    var topOffset = $marker.offset().top;
+                    var lineNum = Math.ceil((topOffset - passageTopOffset) / lineHeight);
+                    passageMarkerLines['ref-' + markerID] = lineNum;
+                    $marker.text('');
+                });
+
+                // console.log('passageMarkerLines', passageMarkerLines);
+
+                var $questions = $contentWrapper.find(".js-question");
+                $questions.each(function(index){
+                    var $question = $(this);
+                    var $refs = $question.find('.x-ref');
+                    $refs.each(function(){
+                        var $ref = $(this);
+                        var referencedMarker = $ref.text();
+                        var referencedMarkerKey = 'ref-' + referencedMarker;
+
+                        $ref.data("marker", referencedMarker);
+                        if (passageMarkerLines.hasOwnProperty(referencedMarkerKey)) {
+                            $ref.text(passageMarkerLines[referencedMarkerKey]).css({color: 'inherit'});
+                        }
+                    });
+
+                    if (index != 0) {
+                        $question.hide();
+                    }
+                });
+
+                $passageText.addClass('collapsed');
+            }
+
+            function displayQuestions(questionsJSONEncoded) {
+                try {
+                    var questions = decodedBase64ToJSONObject(questionsJSONEncoded);
+                    // console.log('displayQuestions questions', questions);
+                    var html = '';
+
+                    if (!questions.length) {
+                        html = renderTemplate('zero_case', {});
+                    }
+
+                    $.each(questions, function(index, question) {
+                        question.testType = 'questionBank';
+                        question.pageType = 'answerKey';
+
+    debugger
+                        if (question.is_attempted && question.question_style == 'true-false') {
+                            question.marked_choice = question.correctly_answered ? parseInt(question.right_choice) : !parseInt(question.right_choice);
+                            if (question.marked_choice) {
+                                question.marked_choice = '1';
+                            } else {
+                                question.marked_choice = '0';
+                            }
+                        } else if (question.question_style === 'matrix' && !question.right_choice) {
+                            question.right_choice = question.choices[0].choice.split(',');
+                        }
+                        console.log('displayQuestion question', question);
+                        html += renderTemplate('question', question);
+                    });
+
+                    $contentWrapper.html(html);
+                    setTimeout(function(){
+                        MathJax.Hub.Queue(['Typeset',MathJax.Hub]);
+                    },0);
+                } catch(e) {
+                    console.error('Failed to parse question JSON', e);
+                }
+            }
+
+            function displayDoubtQuestion(questionJSONEncoded) {
+                try {
+                    var question = decodedBase64ToJSONObject(questionJSONEncoded);
+                    // console.log('displayDoubtQuestion question', question);
+
+                    question.isDoubtQuestion = true;
+
+                    if (question.question_linked_to_id) {
+                        question.isPassageQuestion = true;
+                    } else {
+                        question.isPassageQuestion = false;
+                    }
+
+                    if (question.is_attempted && question.question_style == 'true-false') {
+                        question.marked_choice = question.correctly_answered ? parseInt(question.right_choice) : !parseInt(question.right_choice);
+                        if (question.marked_choice) {
+                            question.marked_choice = '1';
+                        } else {
+                            question.marked_choice = '0';
+                        }
+                    }
+                    
+                    $contentWrapper.html(renderTemplate('question', question));
+
+                    if (question.question_linked_to_id) {
+                        initPassage();
+                    }
+
+                    setTimeout(function(){
+                        MathJax.Hub.Queue(['Typeset',MathJax.Hub]);
+                    },0);
+                } catch(e) {
+                    console.error('Failed to parse question JSON', e);
+                }
+            }
+
+            function decodedBase64ToJSONObject(base64EncodedString) {
+                try {
+                    var jsonString = window.atob(base64EncodedString);
+                    var jsonObject = $.parseJSON(jsonString);
+
+                    return jsonObject;
+                } catch(e) {
+                    console.log('base64EncodedString', base64EncodedString);
+                    console.error('Error while decoding to json object', e);
+                }
+            }
+
+            function displayMockQuestions() {
+                var questions =  [
+                    {
+                        "passage_image": "",
+                        "question_image": "",
+                        "hint_available": true,
+                        "passage_footer": "",
+                        "question_linked_to_id": null,
+                        "sequence_no": 1,
+                        "assertion": "",
+                        "hint": "Temperature is one of the basic physical quantities.",
+                        "can_ask_doubt": true,
+                        "question": "Temperature can be expressed as derived quantity in terms of",
+                        "is_bookmarked": false,
+                        "passage": "",
+                        "solution_rating": 0,
+                        "solution_links": [],
+                        "already_attempted": false,
+                        "solution_id": 203750,
+                        "right_choice": 0,
+                        "correctly_answered": true,
+                        "passage_header": "",
+                        "solution_image": "",
+                        "reason": "",
+                        "hint_image": "",
+                        "multiple_correct": false,
+                        "question_style": "true-false",
+                        "level": 2,
+                        "solution_available": true,
+                        "solution": "<span>Temperature is one of the basic (fundamental) physical quantities.</span>",
+                        "choices": [
+                            {
+                                "is_right": false,
+                                "id": 612181,
+                                "choice": "length and mass",
+                                "image": "",
+                                "label": "A"
+                            },
+                            {
+                                "is_right": false,
+                                "id": 612182,
+                                "choice": "mass and time",
+                                "image": "",
+                                "label": "B"
+                            },
+                            {
+                                "is_right": false,
+                                "id": 612183,
+                                "choice": "length, mass and time",
+                                "image": "",
+                                "label": "C"
+                            },
+                            {
+                                "is_right": true,
+                                "id": 612184,
+                                "choice": "none of these",
+                                "image": "",
+                                "label": "D"
+                            }
+                        ],
+                        "question_linked": false,
+                        "id": 178353,
+                        "question_info": {
+                            "playlist": {
+                                "n_videos": 0,
+                                "goal_name": "Units - Definitions and Systems",
+                                "videos": []
+                            },
+                            "stats": {
+                                "unique_user_attempts": 31,
+                                "correct_attempts": 29
+                            },
+                            "concepts": [
+                                {
+                                    "is_bookmarked": true,
+                                    "long_image": "",
+                                    "long_text": "",
+                                    "type": "definition",
+                                    "text": "Unit is the quantity order.<br>Kinds of unit: (1) Fundamental Unit (2) Derived Unit",
+                                    "image": "",
+                                    "sequence_no": 642,
+                                    "heading": "Unit and their types",
+                                    "id": 11054
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "passage_image": "",
+                        "question_image": "",
+                        "user_mx_answer": [0, 5, 10, 15],
+                        "hint_available": true,
+                        "passage_footer": "",
+                        "question_linked_to_id": null,
+                        "sequence_no": 2,
+                        "assertion": "",
+                        "hint": "$$(A)-q\\;(B)-p\\;(C)-r\\;(D)-v\\;(E)-s\\;(F)-t,u$$",
+                        "can_ask_doubt": true,
+                        "question": "Match the following two columns",
+                        "is_bookmarked": false,
+                        "passage": "",
+                        "solution_rating": 0,
+                        "solution_links": [],
+                        "already_attempted": false,
+                        "solution_id": 508713,
+                        "correctly_answered": false,
+                        "passage_header": "",
+                        "solution_image": "",
+                        "reason": "",
+                        "mx_l1_images": [
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            ""
+                        ],
+                        "hint_image": "",
+                        "mx_l2_images": [
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            ""
+                        ],
+                        "multiple_correct": false,
+                        "question_style": "matrix",
+                        "level": 3,
+                        "mx_l2": [
+                            "(p)$$\\;10^{-13}\\,m$$",
+                            "(q)$$\\;10^{-15}\\,m$$",
+                            "(r)$$\\;10^{-10}\\,m$$",
+                            "(s)$$\\;9.46\\times10^{15}\\,m$$",
+                            "(t)$$\\;3.26\\:light\\:year$$",
+                            "(u)$$\\;3.08\\times10^{16}\\,m$$",
+                            "(v)$$\\;1.49\\times10^{11}\\,m$$"
+                        ],
+                        "mx_l1": [
+                            "(A)$$\\;1\\:fermi$$",
+                            "(B)$$\\;1\\:X-ray\\;unit$$",
+                            "(C)$$\\;1\\:angstrom$$",
+                            "(D)$$\\;1\\:astronomiacl unit$$",
+                            "(E)$$\\;1\\:light\\:year$$",
+                            "(F)$$\\;1\\:parsec$$"
+                        ],
+                        "solution_available": true,
+                        "solution": "Fermi, angstrom and X-ray units are subatomic distance measurement units with order of $${ 10 }^{ -15 }m$$, $${ 10 }^{ -10 }m$$ and $${ 10 }^{ -13 }m$$ respectively. Astronomical unit, light year and parsec are units used to measure astronomical distances with orders of $$1.46X{ 10 }^{ 11 }m$$, $$9.46X{ 10 }^{ 15 }m$$ and $$3.08X{ 10 }^{ 16 }m$$ respectively.",
+                        "right_choice": [1,7,16,27,31,39,40],
+                        "choices": [
+                            {
+                                "is_right": true,
+                                "id": 910697,
+                                "choice": "1,7,16,27,31,39,40",
+                                "image": "",
+                                "label": "A"
+                            }
+                        ],
+                        "question_linked": false,
+                        "id": 273002,
+                        "question_info": {
+                            "playlist": {
+                                "n_videos": 0,
+                                "goal_name": "Units - Definitions and Systems",
+                                "videos": []
+                            },
+                            "stats": {
+                                "unique_user_attempts": 31,
+                                "correct_attempts": 29
+                            },
+                            "concepts": [
+                                {
+                                    "is_bookmarked": true,
+                                    "long_image": "",
+                                    "long_text": "",
+                                    "type": "definition",
+                                    "text": "Unit is the quantity order.<br>Kinds of unit: (1) Fundamental Unit (2) Derived Unit",
+                                    "image": "",
+                                    "sequence_no": 642,
+                                    "heading": "Unit and their types",
+                                    "id": 11054
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "passage_image": "",
+                        "question_image": "",
+                        "hint_available": false,
+                        "passage_footer": "",
+                        "question_linked_to_id": null,
+                        "sequence_no": 4,
+                        "assertion": "",
+                        "hint": "",
+                        "can_ask_doubt": true,
+                        "question": "The unitless quantity is",
+                        "is_bookmarked": false,
+                        "passage": "",
+                        "solution_rating": 0,
+                        "solution_links": [],
+                        "already_attempted": false,
+                        "solution_id": 60664,
+                        "correctly_answered": false,
+                        "passage_header": "",
+                        "solution_image": "",
+                        "reason": "",
+                        "hint_image": "",
+                        "multiple_correct": false,
+                        "question_style": "single correct",
+                        "level": 2,
+                        "solution_available": true,
+                        "solution": "Velocity gradient $$= \\dfrac{dv}{dz} = \\dfrac{LT^{-1}}{L^{1}} = T^{-1}$$<br/>Pressure gradient $$= \\dfrac{dp}{dz} = \\dfrac{M^{1} L^{-1} T^{-2}}{L^{1}} = M^{1} L^{-2} T^{-2}$$<br/>Displacement gradient $$= \\dfrac{dz_{1}}{dz} = \\dfrac{L^{1}}{L^{1}} = M^{0} L^{0} T^{0}$$<br/>Force gradient $$= \\dfrac{df}{dz} = \\dfrac{M^{1} L^{1} T^{-2}}{L^{1}} = M&#160;&#160; T^{-2}$$<br/>Hence, option C is correct.<br/>",
+                        "choices": [
+                            {
+                                "is_right": false,
+                                "id": 11526,
+                                "choice": "velocity gradient",
+                                "image": "",
+                                "label": "A"
+                            },
+                            {
+                                "is_right": false,
+                                "id": 11527,
+                                "choice": "pressure gradiant",
+                                "image": "",
+                                "label": "B"
+                            },
+                            {
+                                "is_right": true,
+                                "id": 11528,
+                                "choice": "displacement gradient",
+                                "image": "",
+                                "label": "C"
+                            },
+                            {
+                                "is_right": false,
+                                "id": 11529,
+                                "choice": "force gradient",
+                                "image": "",
+                                "label": "D"
+                            }
+                        ],
+                        "question_linked": false,
+                        "id": 2908,
+                        "question_info": {
+                            "playlist": {
+                                "n_videos": 0,
+                                "goal_name": "Units - Definitions and Systems",
+                                "videos": []
+                            },
+                            "stats": {
+                                "unique_user_attempts": 31,
+                                "correct_attempts": 29
+                            },
+                            "concepts": [
+                                {
+                                    "is_bookmarked": true,
+                                    "long_image": "",
+                                    "long_text": "",
+                                    "type": "definition",
+                                    "text": "Unit is the quantity order.<br>Kinds of unit: (1) Fundamental Unit (2) Derived Unit",
+                                    "image": "",
+                                    "sequence_no": 642,
+                                    "heading": "Unit and their types",
+                                    "id": 11054
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "passage_image": "",
+                        "question_image": "",
+                        "hint_available": false,
+                        "passage_footer": "",
+                        "question_linked_to_id": null,
+                        "sequence_no": 5,
+                        "assertion": "",
+                        "hint": "",
+                        "can_ask_doubt": true,
+                        "question": "Which is not the unit of Force:",
+                        "is_bookmarked": false,
+                        "passage": "",
+                        "solution_rating": 0,
+                        "solution_links": [],
+                        "already_attempted": false,
+                        "solution_id": 555414,
+                        "correctly_answered": false,
+                        "passage_header": "",
+                        "solution_image": "",
+                        "reason": "",
+                        "hint_image": "",
+                        "multiple_correct": false,
+                        "question_style": "single correct",
+                        "level": 2,
+                        "solution_available": true,
+                        "solution": "Joule is not the unit of force, it is the SI unit of work.",
+                        "choices": [
+                            {
+                                "is_right": false,
+                                "id": 1087536,
+                                "choice": "Poundal",
+                                "image": "",
+                                "label": "A"
+                            },
+                            {
+                                "is_right": false,
+                                "id": 1087537,
+                                "choice": "Dyne",
+                                "image": "",
+                                "label": "B"
+                            },
+                            {
+                                "is_right": true,
+                                "id": 1087538,
+                                "choice": "Joule",
+                                "image": "",
+                                "label": "C"
+                            },
+                            {
+                                "is_right": false,
+                                "id": 1087539,
+                                "choice": "Newton",
+                                "image": "",
+                                "label": "D"
+                            }
+                        ],
+                        "question_linked": false,
+                        "id": 320356,
+                        "question_info": {
+                            "playlist": {
+                                "n_videos": 0,
+                                "goal_name": "Units - Definitions and Systems",
+                                "videos": []
+                            },
+                            "stats": {
+                                "unique_user_attempts": 31,
+                                "correct_attempts": 29
+                            },
+                            "concepts": [
+                                {
+                                    "is_bookmarked": true,
+                                    "long_image": "",
+                                    "long_text": "",
+                                    "type": "definition",
+                                    "text": "Unit is the quantity order.<br>Kinds of unit: (1) Fundamental Unit (2) Derived Unit",
+                                    "image": "",
+                                    "sequence_no": 642,
+                                    "heading": "Unit and their types",
+                                    "id": 11054
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "passage_image": "",
+                        "question_image": "",
+                        "hint_available": false,
+                        "passage_footer": "",
+                        "question_linked_to_id": null,
+                        "sequence_no": 6,
+                        "assertion": "",
+                        "hint": "",
+                        "can_ask_doubt": true,
+                        "question": "One horse power is equal to",
+                        "is_bookmarked": false,
+                        "passage": "",
+                        "solution_rating": 0,
+                        "solution_links": [],
+                        "already_attempted": false,
+                        "solution_id": 194716,
+                        "correctly_answered": false,
+                        "passage_header": "",
+                        "solution_image": "",
+                        "reason": "",
+                        "hint_image": "",
+                        "multiple_correct": false,
+                        "question_style": "single correct",
+                        "level": 2,
+                        "solution_available": true,
+                        "solution": "<u></u><span>$$1$$ $$hp = 745.699872 W$$.&#160;</span><div><span>Approximately it will be $$746 &#160;W$$.</span></div>",
+                        "choices": [
+                            {
+                                "is_right": false,
+                                "id": 624382,
+                                "choice": "$$1000 &#160;W$$",
+                                "image": "",
+                                "label": "A"
+                            },
+                            {
+                                "is_right": false,
+                                "id": 624383,
+                                "choice": "$$500 &#160;W$$",
+                                "image": "",
+                                "label": "B"
+                            },
+                            {
+                                "is_right": false,
+                                "id": 624384,
+                                "choice": "$$764 &#160;W$$",
+                                "image": "",
+                                "label": "C"
+                            },
+                            {
+                                "is_right": true,
+                                "id": 624385,
+                                "choice": "$$746 &#160;W$$",
+                                "image": "",
+                                "label": "D"
+                            }
+                        ],
+                        "question_linked": false,
+                        "id": 185661,
+                        "question_info": {
+                            "playlist": {
+                                "n_videos": 0,
+                                "goal_name": "Units - Definitions and Systems",
+                                "videos": []
+                            },
+                            "stats": {
+                                "unique_user_attempts": 31,
+                                "correct_attempts": 29
+                            },
+                            "concepts": [
+                                {
+                                    "is_bookmarked": true,
+                                    "long_image": "",
+                                    "long_text": "",
+                                    "type": "definition",
+                                    "text": "Unit is the quantity order.<br>Kinds of unit: (1) Fundamental Unit (2) Derived Unit",
+                                    "image": "",
+                                    "sequence_no": 642,
+                                    "heading": "Unit and their types",
+                                    "id": 11054
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "passage_image": "",
+                        "question_image": "",
+                        "hint_available": false,
+                        "passage_footer": "",
+                        "question_linked_to_id": null,
+                        "sequence_no": 7,
+                        "assertion": "",
+                        "hint": "",
+                        "can_ask_doubt": true,
+                        "question": "How nanometre is related to Angstrom?",
+                        "is_bookmarked": false,
+                        "passage": "",
+                        "solution_rating": 0,
+                        "solution_links": [],
+                        "already_attempted": false,
+                        "solution_id": 474452,
+                        "correctly_answered": false,
+                        "passage_header": "",
+                        "solution_image": "",
+                        "reason": "",
+                        "hint_image": "",
+                        "multiple_correct": false,
+                        "question_style": "subjective",
+                        "level": 2,
+                        "solution_available": true,
+                        "solution": "$$1\\ nanometer = 10\\ Angstrom$$",
+                        "choices": [],
+                        "question_linked": false,
+                        "id": 213175,
+                        "question_info": {
+                            "playlist": {
+                                "n_videos": 0,
+                                "goal_name": "Units - Definitions and Systems",
+                                "videos": []
+                            },
+                            "stats": {
+                                "unique_user_attempts": 31,
+                                "correct_attempts": 29
+                            },
+                            "concepts": [
+                                {
+                                    "is_bookmarked": true,
+                                    "long_image": "",
+                                    "long_text": "",
+                                    "type": "definition",
+                                    "text": "Unit is the quantity order.<br>Kinds of unit: (1) Fundamental Unit (2) Derived Unit",
+                                    "image": "",
+                                    "sequence_no": 642,
+                                    "heading": "Unit and their types",
+                                    "id": 11054
+                                }
+                            ]
+                        },
+                    },
+                    {
+                        "passage_image": "",
+                        "question_image": "",
+                        "hint_available": false,
+                        "passage_footer": "",
+                        "question_linked_to_id": null,
+                        "sequence_no": 8,
+                        "assertion": "",
+                        "hint": "",
+                        "can_ask_doubt": true,
+                        "question": "1 $$\\mu$$s&nbsp;= ................s.",
+                        "is_bookmarked": false,
+                        "passage": "",
+                        "solution_rating": 0,
+                        "solution_links": [],
+                        "already_attempted": false,
+                        "solution_id": 474453,
+                        "correctly_answered": false,
+                        "passage_header": "",
+                        "solution_image": "",
+                        "reason": "",
+                        "hint_image": "",
+                        "multiple_correct": false,
+                        "question_style": "subjective",
+                        "level": 2,
+                        "solution_available": true,
+                        "solution": "$$1 \\mu &#160;s = 10^{-6} &#160;s$$",
+                        "choices": [],
+                        "question_linked": false,
+                        "id": 213206
+                    },
+                    {
+                        "passage_image": "",
+                        "question_image": "",
+                        "hint_available": false,
+                        "passage_footer": "",
+                        "question_linked_to_id": null,
+                        "sequence_no": 9,
+                        "assertion": "",
+                        "hint": "",
+                        "can_ask_doubt": true,
+                        "question": "Which pair of following quantities has dimensions different from each other.&nbsp;",
+                        "is_bookmarked": false,
+                        "passage": "",
+                        "solution_rating": 0,
+                        "solution_links": [],
+                        "already_attempted": false,
+                        "solution_id": 556001,
+                        "correctly_answered": false,
+                        "passage_header": "",
+                        "solution_image": "",
+                        "reason": "",
+                        "hint_image": "",
+                        "multiple_correct": false,
+                        "question_style": "single correct",
+                        "level": 2,
+                        "solution_available": true,
+                        "solution": "Moment of inertia $$=\\dfrac { 1 }{ 2 } \\times mass\\times { \\left( Radius\\quad of\\quad gyration \\right) &#160;}^{ 2 }= \\left[ { M }^{ 1 }{ L }^{ 2 }{ T }^{ 0 } \\right] $$<div><br/></div><div>Moment of force $$=$$ torque $$= N.m = $$$$\\left[ { M }^{ 1 }{ L }^{ 2 }{ T }^{ -2 } \\right] $$</div><div><br/></div><div>Both are different from each other.</div>",
+                        "choices": [
+                            {
+                                "is_right": false,
+                                "id": 987773,
+                                "choice": "Impulse and linear momentum",
+                                "image": "",
+                                "label": "A"
+                            },
+                            {
+                                "is_right": false,
+                                "id": 987774,
+                                "choice": "Palank's constant and angular momentum",
+                                "image": "",
+                                "label": "B"
+                            },
+                            {
+                                "is_right": true,
+                                "id": 987775,
+                                "choice": "Moment of inertia and moment to force",
+                                "image": "",
+                                "label": "C"
+                            },
+                            {
+                                "is_right": false,
+                                "id": 987776,
+                                "choice": "Yong's modulus and pressure",
+                                "image": "",
+                                "label": "D"
+                            }
+                        ],
+                        "question_linked": false,
+                        "id": 293330
+                    },
+                    {
+                        "passage_image": "",
+                        "question_image": "",
+                        "hint_available": false,
+                        "passage_footer": "",
+                        "question_linked_to_id": null,
+                        "sequence_no": 10,
+                        "assertion": "",
+                        "hint": "",
+                        "can_ask_doubt": true,
+                        "question": "What are the dimensions of electrical resistance ?",
+                        "is_bookmarked": true,
+                        "passage": "",
+                        "solution_rating": 0,
+                        "solution_links": [],
+                        "already_attempted": false,
+                        "solution_id": 556005,
+                        "correctly_answered": false,
+                        "passage_header": "",
+                        "solution_image": "",
+                        "reason": "",
+                        "hint_image": "",
+                        "multiple_correct": false,
+                        "question_style": "multiple correct",
+                        "level": 2,
+                        "solution_available": true,
+                        "solution": "Electric resistance $$=$$ volt/ampere&#160;<div>$$\\Omega =\\dfrac { volt }{ ampere } = \\dfrac { { meter }^{ 2 }.kilogram }{ { ampere }^{ 2 }{ second }^{ 3 } } =\\left[ { M }^{ 1 }{ L }^{ 2 }{ T }^{ -3 }{ I }^{ -2 } \\right] $$</div>",
+                        "choices": [
+                            {
+                                "is_right": false,
+                                "id": 987798,
+                                "choice": "ML$$\\displaystyle ^{2}$$T$$\\displaystyle ^{-2}$$I$$\\displaystyle ^{2}$$",
+                                "image": "",
+                                "label": "A"
+                            },
+                            {
+                                "is_right": true,
+                                "id": 987799,
+                                "choice": "ML$$\\displaystyle ^{2}$$T$$\\displaystyle ^{-3}$$I$$\\displaystyle ^{-2}$$",
+                                "image": "",
+                                "label": "B"
+                            },
+                            {
+                                "is_right": false,
+                                "id": 987800,
+                                "choice": "ML$$\\displaystyle ^{2}$$T$$\\displaystyle ^{-3}$$I$$\\displaystyle ^{2}$$",
+                                "image": "",
+                                "label": "C"
+                            },
+                            {
+                                "is_right": false,
+                                "id": 987801,
+                                "choice": "ML$$\\displaystyle ^{2}$$T$$\\displaystyle ^{-2}$$I$$\\displaystyle ^{2}$$",
+                                "image": "",
+                                "label": "D"
+                            }
+                        ],
+                        "question_linked": false,
+                        "id": 293337
+                    }
+                ];
+
+                displayQuestions(window.btoa(JSON.stringify(questions)));
+            }
+
+            function displayMockPassageDoubtQuestion() {
+                var question = {
+                    "passage_image": "",
+                    "question_image": "",
+                    "hint_available": false,
+                    "passage_footer": "",
+                    "question_linked_to_id": 313589,
+                    "sequence_no": "1.1",
+                    "assertion": "",
+                    "show_question_header": true,
+                    "disable_bookmark_reason": "This question is out of your syllabus. You can bookmark questions only from your syllabus.",
+                    "hint": "",
+                    "can_ask_doubt": true,
+                    "question": "<div><span>Choose the correct word or phrase to fill in blank no. (1)</span><span> _____.</span></div>",
+                    "is_bookmarked": false,
+                    "passage": "Customer (at a bookstore) : __(1)__ if you had the last part of Harry Potter.&#160;<br/>Shop Assistant : I'm afraid it's out of stock right now.&#160;<br/>Customer : __(2)__! I was hoping to gift this to my niece.&#160;<br/>Shop Assistant : __(3)__, please leave your phone number with us. We'll call you when we get it in store.&#160;<br/>Customer : Oh, that'll be great, thanks.<br/>Shop Assistant : Not at all, have a good day!",
+                    "solution_links": [],
+                    "already_attempted": false,
+                    "disable_bookmark": true,
+                    "correctly_answered": false,
+                    "passage_header": "<span>Complete the conversation between two people in a bookshop.&#160;</span>",
+                    "solution_image": "",
+                    "reason": "",
+                    "hint_image": "",
+                    "multiple_correct": false,
+                    "question_style": "single correct",
+                    "level": 2,
+                    "solution_available": false,
+                    "solution": "",
+                    "choices": [
+                        {
+                            "is_right": false,
+                            "choice_id": 1063009,
+                            "choice": "I had heard",
+                            "image": "",
+                            "label": "A"
+                        },
+                        {
+                            "is_right": false,
+                            "choice_id": 1063010,
+                            "choice": "Can you find out",
+                            "image": "",
+                            "label": "B"
+                        },
+                        {
+                            "is_right": true,
+                            "choice_id": 1063011,
+                            "choice": "I was wondering",
+                            "image": "",
+                            "label": "C"
+                        },
+                        {
+                            "is_right": false,
+                            "choice_id": 1063012,
+                            "choice": "Do you know",
+                            "image": "",
+                            "label": "D"
+                        }
+                    ],
+                    "question_linked": true,
+                    "question_id": 313590
+                };
+                displayDoubtQuestion(window.btoa(JSON.stringify(question)));
+            }
+</script>
+</body>
+</html>
